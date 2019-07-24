@@ -22,12 +22,43 @@ server <- function(input, output, session) {
       ggplot(data) +
          geom_line(aes (month, total, color= data$ctv)) +
          scale_x_date(
-            date_breaks = "1 year",
-            date_minor_breaks = "1 month",
+            date_breaks = "1 month",
             date_labels = "%Y - %m"
          )
       
    })
+   
+   downloads_per_ctv <- reactive({
+      selected_ctvs <- input$ctvs_select
+      selected_from <- input$year[1]
+      selected_to <- input$year[2]
+      
+      monthly_avg_per_ctv <- tutti_time_monthly_ctv %>%
+         filter (ctv == selected_ctvs) %>%
+         filter (month >= selected_from, month <= selected_to) %>%
+         select (ctv, total) %>%
+         group_by(ctv) %>% # group by ctv
+         summarise(avg = sum(total))
+      
+      count_pkg_per_ctv <- packages_per_ctv %>%
+         select(ctv, package) %>%
+         filter(ctv == selected_ctvs) %>%
+         group_by(ctv) %>%
+         summarise(count = n_distinct(package))
+      
+      merged_data <- inner_join(monthly_avg_per_ctv, count_pkg_per_ctv,  c("ctv" = "ctv")) %>%
+                        mutate(avg_pkg = avg / count)
+      
+      
+      
+   })
+   
+   output$downloads_per_ctv <- renderPlot({
+      data = downloads_per_ctv()
+      ggplot(data) +
+         geom_col(aes (ctv, avg_pkg, fill= data$ctv))
+   })
+   
    
    #### PACKAGE LEVEL ####
    time_series_monthly_pkg <- reactive({
@@ -45,7 +76,7 @@ server <- function(input, output, session) {
       ggplot(data) +
          geom_line(aes (month, total, color= data$package)) +
          scale_x_date(
-            date_breaks = "1 year",
+            date_breaks = "1 month",
             date_minor_breaks = "1 month",
             date_labels = "%Y - %m"
          )

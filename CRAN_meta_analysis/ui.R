@@ -45,6 +45,13 @@ body <- dashboardBody(
         solidHeader = TRUE,
         status = "primary",
         plotOutput("ctv_plot")
+      ),
+      box(
+        title = "plot: linechart",
+        width = 6,
+        solidHeader = TRUE,
+        status = "primary",
+        plotOutput("downloads_per_ctv")
       )
       
     ),
