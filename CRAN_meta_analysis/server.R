@@ -3,7 +3,7 @@ library(shinydashboard)
 library(ggplot2)
 library(plotly)
 library(dplyr)
-
+library(r2d3)
 
 server <- function(input, output, session) {
    #### CTV LEVEL ####
@@ -17,15 +17,16 @@ server <- function(input, output, session) {
          filter (month >= selected_from, month <= selected_to)
    })
    
-   output$ctv_plot <- renderPlot({
+   output$ctv_plot <- renderPlotly({
       data = time_series_monthly_ctv()
-      ggplot(data) +
+      p2<- ggplot(data) +
          geom_line(aes (month, total, color= data$ctv)) +
          scale_x_date(
             date_breaks = "1 month",
             date_labels = "%Y - %m"
          )
-      
+     
+   ggplotly (p2)
    })
    
    downloads_per_ctv <- reactive({
@@ -53,11 +54,16 @@ server <- function(input, output, session) {
       
    })
    
-   output$downloads_per_ctv <- renderPlot({
+   
+   
+   output$downloads_per_ctv <- renderPlotly({
       data = downloads_per_ctv()
-      ggplot(data) +
+      p<- ggplot(data) +
          geom_col(aes (ctv, avg_pkg, fill= data$ctv))
+      
+      ggplotly(p)
    })
+   
    
    
    #### PACKAGE LEVEL ####
@@ -82,6 +88,17 @@ server <- function(input, output, session) {
          )
       
    })
+   
+   
+   output$d3test <- renderD3({
+      test <- time_series_monthly_pkg() %>% select(total)
+      
+      r2d3(test,
+         script = "barchart.js"
+      )
+   })
+   
+   
    
    
    output$value <- renderPrint({

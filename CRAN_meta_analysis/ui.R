@@ -39,14 +39,14 @@ body <- dashboardBody(
         width = 6,
         solidHeader = TRUE,
         status = "primary",
-        plotOutput("ctv_plot")
+        plotlyOutput("ctv_plot")
       ),
       box(
         title = "average download statistics of CTV (relative to package count)",
         width = 6,
         solidHeader = TRUE,
         status = "primary",
-        plotOutput("downloads_per_ctv")
+        plotlyOutput("downloads_per_ctv")
       )
       
     ),
@@ -146,7 +146,17 @@ body <- dashboardBody(
     )),
   
   #####tab update data + ui#####
-  tabPanel("update data")
+  tabPanel("update data",
+           box(
+             title = "d3test",
+             width = 6,
+             solidHeader = TRUE,
+             status = "primary",
+             d3Output("d3test")
+             
+           )
+           
+           )
 )))
 
 
