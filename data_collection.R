@@ -1,16 +1,5 @@
 #contains functions for various data collection (e.g. download statistics, dependencies)
 
-library(ctv)
-library(cranlogs)
-library(tidyverse)
-library(httr)
-library(jsonlite)
-library(rvest)
-library(magrittr)
-library(xml2)
-library(lubridate)
-library(dplyr)
-
 ####function get_packages_per_ctv####
 # Packages per CTV
 # Returns a list of all packages and their ctv name and core specification
@@ -34,7 +23,7 @@ get_packages_per_ctv <- function () {
 }
 
 
-####funtion get_api_data#####
+####funtion get_api_data (base for dependencies etc.)#####
 # Takes a string of a package
 # Returns a list of the corresponding API-data
 r_api <- function(package) {
@@ -109,57 +98,16 @@ get_edgelist_of_packages <- function (api_data_of_packages) {
 
 
 
-####function get_subcategory_of_psy_packages####
-
-# takes the list of psy_packages
-# returns as list of psy_packagaes with eaxch subcategory
-get_subcategory_of_psy_packages <- function(psy_packages) {
-    html <-
-        read_html("https://cran.r-project.org/web/views/Psychometrics.html")
-    
-    # target data frame
-    psy_package_categories <- data.frame()
-    
-    
-    # looping over all packages
-    # "psy_packages" may need to be replaced
-    for (package in psy_packages) {
-        # Get all a (links) with text equal to the current package name
-        # then select the next higher ul (unordered list)
-        # then select the p (paragraph) before that ul
-        # that p should contain the name of the categoriy
-        # XPATH
-        query_string <-
-            paste0("//a[text() = '",
-                   package,
-                   "'][1]/ancestor::ul/preceding::p[1]")
-        category <-
-            html %>% html_node(xpath = query_string) %>% html_text(trim = TRUE)
-        
-        # remove colon of category name
-        category <- substr(category, 1, nchar(category) - 1)
-        
-        psy_package_categories <-
-            rbind(psy_package_categories,
-                  data.frame(package = package, category = category))
-    }
-    
-    return (psy_package_categories)
-}
-
-
-
-
-#####function get_download_statistics (adapted from 1999)####
+#####function get_download_statistics (adapted from 10/2012)####
 
 # Takes a list of package names as strings
-# Returns the download statistics of the given packages since 01.01.1999
+# Returns the download statistics of the given packages since 01.10.2012
 get_download_statistics <- function(packages) {
     download_statistics <- data.frame()
     for (package in packages) {
         current_package_stats <- cran_downloads(
             package = package,
-            from    = as.Date("1999-01-01"),
+            from    = as.Date("2012-10-01"),
             to      = Sys.Date() - 1
         )
         download_statistics <-
@@ -174,25 +122,7 @@ get_download_statistics <- function(packages) {
 
 
 
-####get all ctvs in a list#####
-ctvs <- list()
-
-for (n in names(packages_per_ctv))
-    if (is.factor(packages_per_ctv[[n]])) {
-        print(n)
-        print(levels(packages_per_ctv[[n]]))
-    }
-
-
-####get just the packages in a dataframe#####
-just_packages <- data.frame()
-
-just_packages <- packages_per_ctv %>%
-    select(package)
-
-print(just_packages)
-
-
+####get just the ctvs + packages in a separate dataframe#####
 #packages aus packages_per_ctv
 ctvs <- packages_per_ctv %>%
     distinct(ctv)
@@ -201,5 +131,3 @@ packages <- packages_per_ctv %>%
     distinct(package)
 
 
-
-view(pppp)

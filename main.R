@@ -6,6 +6,13 @@ library(dplyr)
 library(ggplot2)
 library(scales)
 library(cranly)
+library(tidyverse)
+library(httr)
+library(jsonlite)
+library(rvest)
+library(magrittr)
+library(xml2)
+library(lubridate)
 
 ####get global data + tutti####
 #generate global_data
@@ -37,88 +44,7 @@ tutti_timeseries <-
 
 
 
-#####psychometrics-specific#####
-psy_packages <- ctv::available.views()[[30]]$packagelist$name
-psy_subcategories <- get_subcategory_of_psy_packages(psy_packages)
-
-
-
-#####filter global data#####
-#alles was hier drin steht, ist der default
-filter_timeseries_data <-
-  function (selected_from = as.Date("1999-01-01"),
-            selected_to = Sys.Date() - 1,
-            selected_packages = list(),
-            selected_min_count = 0,
-            selected_ctv = list(),
-            level = "ctv") {
-    if (level == "package") {
-      filtered_data <- tutti_timeseries %>%
-        filter (package == selected_packages) %>%
-        filter (date >= selected_from, date <= selected_to) %>%
-        filter (count >= selected_min_count) %>%
-        select (date, count, package)
-    }
-    else{
-      filtered_data <- tutti_timeseries %>%
-        filter (ctv == selected_ctv) %>%
-        filter (date >= selected_from, date <= selected_to) %>%
-        filter (count >= selected_min_count) %>%
-        select (date, count, ctv)
-    }
-    
-    return (filtered_data)
-  }
 
 
 
 
-####aggregation (time)#####
-aggregate_timeseries_data <-
-  function (timelevel = "monthly", filtered_data) {
-    download_monthly <- filtered_data %>%
-      mutate(month = as.Date(cut(date, breaks = "month"))) %>%
-      group_by_at(vars(-c(date, count))) %>% # group by everything but date, day, count
-      summarise(total = sum(count))
-  }
-
-#aggregate timeseries data to reduce the amount of data
-tutti_timeseries_monthly <- tutti_timeseries %>%
-  mutate(
-    day = format(date, "%d"),
-    month = format(date, "%m"),
-    year = format(date, "%Y")
-  ) %>%
-  group_by(year, month, package) %>%
-  summarise(total = sum(count))
-
-
-tutti_timeseries_monthly_ctv <- tutti_timeseries %>%
-  mutate(
-    day = format(date, "%d"),
-    month = format(date, "%m"),
-    year = format(date, "%Y")
-  ) %>%
-  group_by(year, month, ctv) %>%
-  summarise(total = sum(count))
-
-
-
-#####test filter + aggregation#####
-test <- filter_timeseries_data(
-  selected_from = "2000-06-02",
-  selected_packages = c("abc", "aspect"),
-  selected_min_count = 50,
-  level = "package"
-)
-
-test2 <- aggregate_timeseries_data(filtered_data = test)
-
-
-ggplot(data = test2) +
-  geom_line(aes (month, total, color = package)) +
-  scale_x_date(
-    date_breaks = "1 year",
-    date_minor_breaks = "1 month",
-    date_labels = "%Y - %m"
-  )
