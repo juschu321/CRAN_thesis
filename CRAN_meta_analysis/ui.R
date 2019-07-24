@@ -36,7 +36,7 @@ body <- dashboardBody(
       )
     ),
     
-    box(title = "output", textOutput("ctvs_select")),
+   
     
     fluidRow(
       box(
@@ -44,7 +44,7 @@ body <- dashboardBody(
         width = 6,
         solidHeader = TRUE,
         status = "primary",
-        plotOutput("plot")
+        plotOutput("ctv_plot")
       )
       
     ),
@@ -58,7 +58,7 @@ body <- dashboardBody(
         sliderInput(
           'year',
           "time span",
-          min = as.Date("1999-01-01"),
+          min = as.Date("2012-10-01"),
           max = Sys.Date(),
           value = c(as.Date("2016-02-25"), Sys.Date()),
           timeFormat = "%F"
@@ -95,7 +95,7 @@ body <- dashboardBody(
         "*only apperas when Psychometrics is selected: you can specify on subcategories",
         c("All")
       )
-    ),
+      ),
     fluidRow(
       box(
         title = "plot: dependencies",
@@ -109,7 +109,7 @@ body <- dashboardBody(
         width = 6,
         solidHeader = TRUE,
         status = "primary",
-        plotOutput("plot_packages")
+        plotOutput("pkg_plot")
       )
       
     ),
@@ -121,9 +121,9 @@ body <- dashboardBody(
         solidHeader = TRUE,
         status = "primary",
         sliderInput(
-          'year',
+          'date_selection_package',
           "time span",
-          min = as.Date("1999-01-01"),
+          min = as.Date("2012-10-01"),
           max = Sys.Date(),
           value = c(as.Date("2016-02-25"), Sys.Date()),
           timeFormat = "%F"
@@ -150,6 +150,8 @@ body <- dashboardBody(
           selected = 0
         )
       )
+      
+    
   )),
   
   #####tab update data + ui#####

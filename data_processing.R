@@ -36,3 +36,17 @@ aggregate_timeseries_data <-
       group_by_at(vars(-c(date, count))) %>% # group by everything but date, day, count
       summarise(total = sum(count))
   }
+
+tutti_time_monthly_ctv <-tutti_timeseries %>%
+      select(date,count,ctv)%>%
+      mutate(month = as.Date(cut(date, breaks = "month"))) %>%
+      group_by_at(vars(-c(date, count))) %>% # group by everything but date, day, count
+      summarise(total = sum(count))
+  
+tutti_time_monthly_package <-tutti_timeseries %>%
+  select(date,count,package)%>%
+  mutate(month = as.Date(cut(date, breaks = "month"))) %>%
+  group_by_at(vars(-c(date, count))) %>% # group by everything but date, day, count
+  summarise(total = sum(count))
+
+
