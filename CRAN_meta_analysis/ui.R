@@ -25,11 +25,6 @@ body <- dashboardBody(
         selected = "Psychometrics"
       ),
       selectInput(
-        'core_select',
-        "the core-packages are installed with R Studio at the beginning; with this option you can exclude these core-packages (core = TRUE) from the analysis",
-        c("FALSE", "TRUE")
-      ),
-      selectInput(
         'subcategory_select',
         "*only apperas when Psychometrics is selected: you can specify on subcategories",
         c("All")
@@ -40,14 +35,14 @@ body <- dashboardBody(
     
     fluidRow(
       box(
-        title = "plot: linechart",
+        title = "download statistics of CTV",
         width = 6,
         solidHeader = TRUE,
         status = "primary",
         plotOutput("ctv_plot")
       ),
       box(
-        title = "plot: linechart",
+        title = "average download statistics of CTV (relative to package count)",
         width = 6,
         solidHeader = TRUE,
         status = "primary",
@@ -93,11 +88,6 @@ body <- dashboardBody(
         selected = "dplyr"
       ),
       selectInput(
-        'core_select',
-        "the core-packages are installed with R Studio at the beginning; with this option you can exclude these core-packages (core = TRUE) from the analysis",
-        c("FALSE", "TRUE")
-      ),
-      selectInput(
         'subcategory_select',
         "*only apperas when Psychometrics is selected: you can specify on subcategories",
         c("All")
@@ -123,25 +113,6 @@ body <- dashboardBody(
     
     fluidRow(
       box(
-        title = "date range",
-        width = 6,
-        solidHeader = TRUE,
-        status = "primary",
-        sliderInput(
-          'date_selection_package',
-          "time span",
-          min = as.Date("2012-10-01"),
-          max = Sys.Date(),
-          value = c(as.Date("2016-02-25"), Sys.Date()),
-          timeFormat = "%F"
-        )
-        
-      )
-    ),
-    
-    
-    fluidRow(
-      box(
         title = "dependencies",
         width = 6,
         solidHeader = TRUE,
@@ -156,10 +127,23 @@ body <- dashboardBody(
           ),
           selected = 0
         )
+      ),
+      box(
+        title = "date range",
+        width = 6,
+        solidHeader = TRUE,
+        status = "primary",
+        sliderInput(
+          'date_selection_package',
+          "time span",
+          min = as.Date("2012-10-01"),
+          max = Sys.Date(),
+          value = c(as.Date("2016-02-25"), Sys.Date()),
+          timeFormat = "%F"
+        )
+        
       )
-      
-    
-  )),
+    )),
   
   #####tab update data + ui#####
   tabPanel("update data")

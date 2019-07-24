@@ -40,7 +40,8 @@ tutti_dependencies <-
 
 #match pacakge- downloads with ctv (-> ctv downloads possible)
 tutti_timeseries <-
-  inner_join(global_download, packages_per_ctv, by = c("package" = "package"))
+  inner_join(global_download, packages_per_ctv, by = c("package" = "package"))%>%
+  filter(core == FALSE)
 
 
 
