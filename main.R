@@ -13,6 +13,7 @@ library(rvest)
 library(magrittr)
 library(xml2)
 library(lubridate)
+library(plotly)
 
 ####get global data + tutti####
 #generate global_data
@@ -43,9 +44,6 @@ tutti_timeseries <-
   inner_join(global_download, packages_per_ctv, by = c("package" = "package"))%>%
   filter(core == FALSE)
 
-
-
-
-
-
-
+ppp <- packages_per_ctv%>%
+  group_by(package)%>%
+  distinct(package)
